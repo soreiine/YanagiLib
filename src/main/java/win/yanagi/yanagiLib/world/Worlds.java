@@ -14,7 +14,7 @@ public final class Worlds {
     }
 
     // 指定したワールドを削除
-    public static boolean deleteWorld(@NotNull World world) throws IOException {
+    public static boolean deleteWorld(@NotNull World world) {
         File file = world.getWorldFolder();
 
         boolean unloadSuccessful = Bukkit.unloadWorld(world, false);
