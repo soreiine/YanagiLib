@@ -32,9 +32,11 @@ public final class Players {
     public static void resetPlayerHealth(@NotNull Player player) {
         double health;
 
+        // プレイヤーの最大体力を取得
         AttributeInstance maxHealthAttribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         health = maxHealthAttribute != null ? maxHealthAttribute.getValue() : 20.0;
 
+        // 取得した最大体力にセット
         player.setHealth(health);
     }
 
