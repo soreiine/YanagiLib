@@ -1,5 +1,6 @@
 package win.yanagi.yanagiLib.world;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +14,20 @@ public final class Worlds {
     }
 
     // 指定したワールドを削除
-    public static void deleteWorld(@NotNull World world) throws IOException {
+    public static boolean deleteWorld(@NotNull World world) throws IOException {
         File file = world.getWorldFolder();
 
-        FileUtils.deleteDirectory(file);
+        boolean unloadSuccessful = Bukkit.unloadWorld(world, false);
+        if (!unloadSuccessful) {
+            return false;
+        }
+
+        try {
+            FileUtils.deleteDirectory(file);
+        } catch (IOException exception) {
+            return false;
+        }
+
+        return true;
     }
 }
