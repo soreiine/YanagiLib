@@ -2,7 +2,6 @@ package win.yanagi.yanagiLib.message;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
@@ -15,24 +14,33 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Objects;
 
-public class Messages {
+public class SimpleMessagesProvider extends AbstractMessageProvider {
     private final JavaPlugin plugin;
     private final String resourceFileName;
     private FileConfiguration messageConfig;
 
-    public Messages(@NotNull JavaPlugin plugin, @NotNull String resourceFileName) {
+    public SimpleMessagesProvider(@NotNull JavaPlugin plugin, @NotNull String resourceFileName) {
         this.plugin = plugin;
         this.resourceFileName = resourceFileName;
     }
 
     // メッセージファイルをロードして登録
-    public void loadConfig() {
+    @Override
+    public void load() {
+        clear();
+
         File file = new File(plugin.getDataFolder(), resourceFileName);
         if (!file.exists()) {
             plugin.saveResource(resourceFileName, false);
         }
 
         messageConfig = YamlConfiguration.loadConfiguration(file);
+    }
+
+    // 登録したメッセージ情報をクリア
+    @Override
+    public void clear() {
+        messageConfig = null;
     }
 
     // メッセージファイルの値を変換なしでString型として取得
@@ -85,18 +93,5 @@ public class Messages {
         }
 
         targets.forEach(target -> target.sendMessage(message));
-    }
-
-    // TargetResolverを取得
-    public TagResolver getTagResolver(@NotNull Object... replacers) {
-        TagResolver.Builder resolverBuilder = TagResolver.builder();
-
-        for (int i = 0; i < replacers.length; i += 2) {
-            if (i + 1 < replacers.length) {
-                resolverBuilder.resolver(Placeholder.unparsed(String.valueOf(replacers[i]), String.valueOf(replacers[i + 1])));
-            }
-        }
-
-        return resolverBuilder.build();
     }
 }
